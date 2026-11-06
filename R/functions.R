@@ -100,7 +100,9 @@ plot_pollen_map <- function(pollen_by_state) {
   plot_usmap(data = pollen_by_state, values = "rate", regions = "states") +
     scale_fill_distiller(
       palette = "YlOrRd", direction = 1,
+      limits = c(0.05, 0.10),
       labels = percent, name = "Pollen allergy", na.value = "grey90"
     ) +
-    labs(title = "Proportion of patients with a pollen allergy, by state")
+    labs(title = "Proportion of patients with a pollen allergy, by state") +
+    theme(legend.position = "right")
 }

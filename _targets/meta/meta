@@ -1,9 +1,20 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-download_data|function|7527b84746cd1217
-read_from_zip|function|1c5688b5b89f3fb4
-load_allergies|function|04ee4673ddb59a49
-load_patients|function|adbd70693193e75b
-data_zip|stem|6da312022b65668f|4013754addf64b42|0d5c74799eb8864b|-1857246230|data/data.zip|t20763.6663542165s|s292920697b|292920697|file|local|vector|||50.58||
 patients_raw|stem|d36cfd89667a089c|3eb6b6f4718c9027|9dace4e80f513199|1336686124||t20763.6663953651s|s606730b|606730|qs|local|vector|||1.1||
 allergies_raw|stem|116c0bad83b05f46|114e91d1f09f2620|84d6450a2a4e82b1|-490975966||t20763.6664008891s|s64568b|64568|qs|local|vector|||0.11||
-patients_clean|stem||9fdacc4030534479|49cf51a136fe1086|1359923953||t20763.6664034553s||0|qs|local|vector|||0.06||could not find function 'clean_patients'
+data_zip|stem|6da312022b65668f|4013754addf64b42|cff7b2587f833d2d|-1857246230|data/data.zip|t20763.6663542165s|s292920697b|292920697|file|local|vector|||2.85||
+patients_clean|stem|c2a7acd9be839cb1|9fdacc4030534479|30f49d7bb73ab111|1359923953||t20763.6926185292s|s77874b|77874|qs|local|vector|||0.03||
+pollen|stem|4733739fd17e178f|d20d8ab55a93f145|0c2d4d4062a16cad|969005875||t20763.6926219577s|s3795b|3795|qs|local|vector|||0.03||
+patients_pollen|stem|b3a2093c2ac7a039|1edc5ddfcd6360d1|833c11166b954f1b|-858670693||t20763.6926251601s|s86450b|86450|qs|local|vector|||0.2||
+pollen_by_state|stem|5f1c6550c457e710|afc91d6ab6406a2f|2437a82652433f70|-519818789||t20763.6926261843s|s365b|365|qs|local|vector|||0.01||
+chi2_state|stem|f26f9d7f32e7bf97|5e8940324bb317f0|0352f7e34a6eab36|99615189||t20763.692627185s|s829b|829|qs|local|vector|||0.02||
+download_data|function|44375a3af1062e3b
+rate_by_state|function|84d4c1f5d00eadbd
+read_from_zip|function|1c5688b5b89f3fb4
+link_patients_pollen|function|6db51f9be24328d7
+test_pollen_chi2|function|13997edb4c1a930b
+clean_pollen|function|b12dc054ec465b34
+clean_patients|function|345ab144ae8d475e
+plot_pollen_map|function|4b79558c03bffabe
+load_allergies|function|04ee4673ddb59a49
+load_patients|function|adbd70693193e75b
+pollen_map|stem|37fb7c3d9505eab5|90cc6da1435e9d22|e92c5f9deaa913c5|-1771313917||t20763.7134121958s|s594522b|594522|qs|local|vector|||2.51||

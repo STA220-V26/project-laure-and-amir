@@ -69,4 +69,8 @@ list(
 
 # tar_make()                  # to copy-paste in the console start the pipeline but NOT UNCOMMENT!!!! (loop)
 # tar_read(pollen_by_state)   # see just a result
-# tar_visnetwork() # if I want to see the network
+# tar_read(chi2_state         # to see chi2
+# tar_read(pollen_map)        # to see the map
+# tar_visnetwork()            # if I want to see the network
+# next line: to install only the missing packages
+# install.packages(setdiff(c("package name","other packages name"), rownames(installed.packages())))
