@@ -5,7 +5,7 @@ library(targets)
 
 # Set target options:
 tar_option_set(
-  packages = c("readr", "dplyr", "stringr", "lubridate", "janitor", "curl", "fs"), 
+  packages = c("readr", "dplyr", "stringr", "curl", "fs"),
   format = "qs"
 )
 
@@ -13,23 +13,23 @@ tar_option_set(
 tar_source()
 # tar_source("other_functions.R") # Source other scripts as needed.
 
-# Replace the target list below with your own:
+# target list:
 list(
 
   # load
    tar_target(
-    name = data_zip,
+    name = data_zip,                  # download the course data file (zip)
     command = download_data(),
     format = "file"
   ), 
 
   tar_target(
-    name = patients_raw, # download the patient data
-    command = load_patients(data_zip) #function
+    name = patients_raw,              # read the patient data from zip
+    command = load_patients(data_zip) 
   ),
 
-  tar_target(
-    allergies_raw,
+  tar_target(                         # read the allergy data from zip
+    allergies_raw, 
     load_allergies(data_zip) 
   ),
 
@@ -57,12 +57,10 @@ list(
   # Chi2 test - difference in allergy rates btw states?
   tar_target(
     chi2_state,
-    test_pollen_chi2(
-      patients_pollen, group = "state"
-    )
+    test_pollen_chi2(patients_pollen)
   )
 )
 
-# tar_make()                  # start the pipeline
+# tar_make()                  # to copy-paste in the console start the pipeline but NOT UNCOMMENT!!!! (loop)
 # tar_read(pollen_by_state)   # see just a result
 # tar_visnetwork() # if I want to see the network
