@@ -1,0 +1,4 @@
+# Data files to not put on git
+data/*
+*.zip
+data-fixed/*
