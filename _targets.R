@@ -5,7 +5,7 @@ library(targets)
 
 # Set target options:
 tar_option_set(
-  packages = c("readr", "dplyr", "stringr", "curl", "fs"),
+  packages = c("readr", "dplyr", "stringr", "curl", "fs", "ggplot2", "usmap", "scales"),
   format = "qs"
 )
 
@@ -58,6 +58,12 @@ list(
   tar_target(
     chi2_state,
     test_pollen_chi2(patients_pollen)
+  ),
+
+  # The map (supplementary)
+    tar_target(
+    pollen_map,
+    plot_pollen_map(pollen_by_state)
   )
 )
 

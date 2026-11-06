@@ -6,9 +6,9 @@
 
 # load the data from the git data file of the course
 download_data <- function(path = "data/data.zip") {
-  fs::dir_create(fs::path_dir(path))
-  if (!fs::file_exists(path)) {
-    curl::curl_download(
+  dir_create(fs::path_dir(path))
+  if (!file_exists(path)) {
+    curl_download(
       "https://github.com/eribul/cs/raw/refs/heads/main/data.zip",
       path,
       quiet = FALSE
@@ -93,3 +93,14 @@ test_pollen_chi2 <- function(patients_pollen) {
 # H0 would be that all states have the same rate of allergy
 # 6 states of 1100 patients so big enough to do a Chi Square
 
+
+# Supplementary map ------------------------------------------------------
+
+plot_pollen_map <- function(pollen_by_state) {
+  plot_usmap(data = pollen_by_state, values = "rate", regions = "states") +
+    scale_fill_distiller(
+      palette = "YlOrRd", direction = 1,
+      labels = percent, name = "Pollen allergy", na.value = "grey90"
+    ) +
+    labs(title = "Proportion of patients with a pollen allergy, by state")
+}
