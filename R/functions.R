@@ -29,6 +29,33 @@ load_patients  <- function(zip_path) read_from_zip(zip_path, "patients.csv")
 load_allergies <- function(zip_path) read_from_zip(zip_path, "allergies.csv")
 
 
+# Summary of checks on the raw data --------------------------------------
+
+check_data <- function(patients_raw, allergies_raw, pollen) {
+  checks <- c(
+    no_dupl_patients   = !any(duplicated(patients_raw$id)),
+    no_death_bef_birth = all(is.na(patients_raw$deathdate) |
+    patients_raw$deathdate >= patients_raw$birthdate),
+    allpoll_with_pat   = all(pollen$patient %in% patients_raw$id),
+    no_dupl_poll       = !any(duplicated(pollen))
+  )
+  
+  if (all(checks)) {
+    message("Data checks OK: no duplicated patients, no death before birth, every pollen record has a patient, no duplicated pollen records.")
+  } else {
+    message("Data checks PROBLEM: ", paste(names(checks)[!checks], collapse = ", "))
+  }
+  
+  list(
+    checks      = checks,
+    n_patients  = nrow(patients_raw),
+    n_allergies = nrow(allergies_raw),
+    missing     = colSums(is.na(patients_raw)),
+    per_state   = table(patients_raw$state)
+  )
+}
+
+
 # Clean the data ---------------------------------------------------------
 
 # only useful columns and verifications done before on potential issues (detailed in readme)
@@ -93,6 +120,27 @@ test_pollen_chi2 <- function(patients_pollen) {
 # H0 would be that all states have the same rate of allergy
 # 6 states of 1100 patients so big enough to do a Chi Square
 
+
+# Chi 2 checks -----------------------------------------------------------
+
+check_chi2 <- function(patients_pollen) {
+  tbl    <- table(patients_pollen$state, patients_pollen$pollen_allergy)
+  exp    <- suppressWarnings(chisq.test(tbl)$exp)
+
+  checks <- c(
+    a_row_per_patient   = !any(duplicated(patients_pollen$id)),
+    no_missing_state    = !any(is.na(patients_pollen$state)),
+    all_expected_min5   = all(exp >= 5)
+  )
+
+  if (all(checks)) {
+    message("Chi2 conditions OK: 1row/patient, no missing state, all expected counts >= 5 (smallest: ", round(min(exp), 1), ").")
+  } else {
+    message("Chi2 conditions PROBLEM: ", paste(names(checks)[!checks], collapse = ", "))
+  }
+
+  list(checks = checks, table = tbl, expected = round(exp, 1))
+}
 
 # Supplementary map ------------------------------------------------------
 
