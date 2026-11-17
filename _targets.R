@@ -1,7 +1,11 @@
 # Created by use_targets().
 # Load packages required to define the pipeline:
 library(targets)
+library(qs2)       #Needed by targets for format = "qs"
 # library(tarchetypes) # Load other packages as needed.
+
+# TO RUN TO BE IN THE SAME ENVIRONMENT:
+# renv::qs
 
 # Set target options:
 tar_option_set(

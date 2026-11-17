@@ -6,17 +6,13 @@ STA220 – Data project (ECS4) · Laure & Amir
 
 Is the distribution of pollen allergies unequal across the territory (states)?
 
-**Hypothesis:** the proportion of patients with a pollen allergy differs between states.
-We will assess this with a chi-square test of independence.
+**Hypothesis:** the proportion of patients with a pollen allergy differs between states. We will assess this with a chi-square test of independence.
 
-**Exploratory (if time allows):**
-- a map coloured by the rate of pollen allergy
-- the age/date at which pollen allergies first appear, and whether it differs between areas
+**Exploratory (if time allows):** - a map coloured by the rate of pollen allergy - the age/date at which pollen allergies first appear, and whether it differs between areas
 
 ## Data
 
-Synthetic patient data (Synthea) provided in the course (`data.zip`, downloaded automatically by the pipeline).
-Two datasets are linked by patient id:
+Synthetic patient data (Synthea) provided in the course (`data.zip`, downloaded automatically by the pipeline). Two datasets are linked by patient id:
 
 - `patients.csv` – one row per patient, including state and county
 - `allergies.csv` – one row per allergy diagnosis
@@ -27,23 +23,56 @@ Data files are stored in `data/` and are not under version control.
 
 ## How to run
 
-```r
-install.packages(c("targets", "qs2", "readr", "dplyr", "stringr",
-                   "lubridate", "janitor", "curl", "fs"))
-targets::tar_make()
-```
+The package versions are recorded with [renv](https://rstudio.github.io/renv/) in `renv.lock`, so that anyone that runs the code, can do so with the same packages (the R version used is also written in `renv.lock`).
+
+1.  **Get the project.** Clone the repository and open the project folder in RStudio or Positron (the R working directory must be the project folder).
+
+    ``` bash
+    git clone https://github.com/STA220-V26/project-laure-and-amir.git
+    ```
+
+2.  **Install the packages.** renv starts automatically when R is opened in the folder (through `.Rprofile`). Then install the exact versions from `renv.lock`:
+
+    ``` r
+    renv::restore()
+    ```
+
+    If renv is not installed yet, run `install.packages("renv")` first.
+
+3.  **Run the pipeline.** The data (`data.zip`) are downloaded automatically the first time.
+
+    ``` r
+    targets::tar_make()
+    ```
+
+4.  **See the results.**
+
+    ``` r
+    targets::tar_read(data_check)       # checks of the raw data + summary
+    targets::tar_read(pollen_by_state)  # pollen allergy rate by state
+    targets::tar_read(chi2_check)       # conditions for the chi-square test
+    targets::tar_read(chi2_state)       # chi-square test
+    targets::tar_read(pollen_map)       # map
+    targets::tar_visnetwork()           # graph of the pipeline
+    ```
+
+**For Amir:** If you install a new package, run `renv::snapshot()` and commit `renv.lock`.
 
 ## Project structure
 
-```
+```         
 .
 ├── .gitignore         – files excluded from Git
+├── .Rprofile          – starts renv when R is opened in the project
 ├── R/
-│   └── functions.R    – functions used by pipeline
-├── README.md          
+│   └── functions.R    – functions used by the pipeline
+├── README.md
 ├── _targets.R         – targets pipeline
+├── renv.lock          – package versions (renv)
+├── renv/              – renv settings (the project library itself is not versioned)
 └── data/              – raw data (downloaded automatically, not versioned)
 ```
 
 ## Data validation
+
 We explored the data and ran a certain amount of checks before designing the clean functions :no deaths or diagnoses before birth, no diagnoses after death, no duplicated patient ids and no duplicated pollen records were found (summary made in the target workflow). All pollen records are of type allergy (category environment). 601 of 6,851 patients (8.8%) have a pollen allergy; 410 of them have both tree and grass pollen allergy.
