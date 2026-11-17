@@ -33,6 +33,12 @@ list(
     load_allergies(data_zip) 
   ),
 
+    # summary of some raw data
+  tar_target(
+  data_check,
+  check_data(patients_raw, allergies_raw, pollen)
+),
+
   # clean
   tar_target(
     patients_clean,
@@ -60,6 +66,12 @@ list(
     test_pollen_chi2(patients_pollen)
   ),
 
+  # Chi2 - checks
+  tar_target(
+     chi2_check,
+    check_chi2(patients_pollen)
+  ),
+
   # The map (supplementary)
     tar_target(
     pollen_map,
@@ -67,9 +79,12 @@ list(
   )
 )
 
+# TO COPY PASTE IN THE CONSOLE
 # tar_make()                  # to copy-paste in the console start the pipeline but NOT UNCOMMENT!!!! (loop)
+# tar_read(data_check)        # to see the check summary
 # tar_read(pollen_by_state)   # see just a result
-# tar_read(chi2_state         # to see chi2
+# tar_read(chi2_state)         # to see chi2
+# tar_read(check_chi2)        # to see the checks for the chi2
 # tar_read(pollen_map)        # to see the map
 # tar_visnetwork()            # if I want to see the network
 # next line: to install only the missing packages

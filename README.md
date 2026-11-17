@@ -4,9 +4,9 @@ STA220 – Data project (ECS4) · Laure & Amir
 
 ## Research question
 
-Is the distribution of pollen allergies unequal across the territory (states or counties)?
+Is the distribution of pollen allergies unequal across the territory (states)?
 
-**Hypothesis:** the proportion of patients with a pollen allergy differs between states/counties.
+**Hypothesis:** the proportion of patients with a pollen allergy differs between states.
 We will assess this with a chi-square test of independence.
 
 **Exploratory (if time allows):**
@@ -46,4 +46,4 @@ targets::tar_make()
 ```
 
 ## Data validation
-We explored the data and ran a certain amount of checks before designing the clean functions :no deaths or diagnoses before birth, no diagnoses after death, no duplicated patient ids and no duplicated pollen records were found. All pollen records are of type allergy (category environment). 601 of 6,851 patients (8.8%) have a pollen allergy; 410 of them have both tree and grass pollen allergy.
+We explored the data and ran a certain amount of checks before designing the clean functions :no deaths or diagnoses before birth, no diagnoses after death, no duplicated patient ids and no duplicated pollen records were found (summary made in the target workflow). All pollen records are of type allergy (category environment). 601 of 6,851 patients (8.8%) have a pollen allergy; 410 of them have both tree and grass pollen allergy.
