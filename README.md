@@ -1,6 +1,6 @@
-# Pollen allergy across US states and counties
+# Pollen allergy across US states
 
-STA220 – Data project (ECS4) · Laure & Amir
+STA220 – Data project (ECS4) · Laure Rapp & Amir Dinari
 
 ## Research question
 
@@ -8,11 +8,14 @@ Is the distribution of pollen allergies unequal across the territory (states)?
 
 **Hypothesis:** the proportion of patients with a pollen allergy differs between states. We will assess this with a chi-square test of independence.
 
-**Exploratory (if time allows):** - a map coloured by the rate of pollen allergy - the age/date at which pollen allergies first appear, and whether it differs between areas
+**Exploratory:**
+
+- a map coloured by the rate of pollen allergy (done)
+- the age at which pollen allergies first appear, and whether it differs between states (age at first diagnosis computed: almost always 0–1 year, so not analysed further)
 
 ## Data
 
-Synthetic patient data (Synthea) provided in the course (`data.zip`, downloaded automatically by the pipeline). Two datasets are linked by patient id:
+Synthetic patient data provided in the course (`data.zip`, downloaded automatically by the pipeline). Two datasets are linked by patient id:
 
 - `patients.csv` – one row per patient, including state and county
 - `allergies.csv` – one row per allergy diagnosis
@@ -21,9 +24,14 @@ The rate of pollen allergy is computed as: patients with a pollen allergy / all 
 
 Data files are stored in `data/` and are not under version control.
 
+## Main result
+
+No evidence that the proportion of pollen allergy differs between states (chi-square test, p = 0.83).
+Results, figures, interpretation and possible further analyses are in `presentation.qmd`, rendered as a report (`report.html`) and as slides (`slides.html`).
+
 ## How to run
 
-The package versions are recorded with [renv](https://rstudio.github.io/renv/) in `renv.lock`, so that anyone that runs the code, can do so with the same packages (the R version used is also written in `renv.lock`).
+The package versions are recorded with [renv](https://rstudio.github.io/renv/) in `renv.lock`, so that anyone who runs the code uses the same packages (the R version used is also written in `renv.lock`).
 
 1.  **Get the project.** Clone the repository and open the project folder in RStudio or Positron (the R working directory must be the project folder).
 
@@ -56,7 +64,9 @@ The package versions are recorded with [renv](https://rstudio.github.io/renv/) i
     targets::tar_visnetwork()           # graph of the pipeline
     ```
 
-**For Amir:** If you install a new package, run `renv::snapshot()` and commit `renv.lock`.
+    `tar_make()` also renders the report and the slides: open `report.html` or `slides.html`.
+
+**For contributors:** after installing a new package, run `renv::snapshot()` and commit `renv.lock`.
 
 ## Project structure
 
@@ -68,6 +78,9 @@ The package versions are recorded with [renv](https://rstudio.github.io/renv/) i
 │   └── functions.R    – functions used by the pipeline
 ├── README.md
 ├── _targets.R         – targets pipeline
+├── presentation.qmd   – Quarto source: reads the results from the pipeline (tar_read)
+├── report.html        – rendered report (web page)
+├── slides.html        – rendered slides (revealjs)
 ├── renv.lock          – package versions (renv)
 ├── renv/              – renv settings (the project library itself is not versioned)
 └── data/              – raw data (downloaded automatically, not versioned)
@@ -75,4 +88,4 @@ The package versions are recorded with [renv](https://rstudio.github.io/renv/) i
 
 ## Data validation
 
-We explored the data and ran a certain amount of checks before designing the clean functions :no deaths or diagnoses before birth, no diagnoses after death, no duplicated patient ids and no duplicated pollen records were found (summary made in the target workflow). All pollen records are of type allergy (category environment). 601 of 6,851 patients (8.8%) have a pollen allergy; 410 of them have both tree and grass pollen allergy.
+We explored the data and ran several checks before writing the cleaning functions: no deaths or diagnoses before birth, no diagnoses after death, no duplicated patient ids and no duplicated pollen records were found. The main checks are repeated in the pipeline (`tar_read(data_check)`), including no pollen diagnosis before birth or after death. All pollen records are of type allergy (category environment). 601 of 6,851 patients (8.8%) have a pollen allergy; 410 of them have both tree and grass pollen allergy.

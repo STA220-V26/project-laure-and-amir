@@ -2,3 +2,6 @@
 data/*
 *.zip
 data-fixed/*
+
+# Quarto working folder (recreated at each render)
+.quarto/

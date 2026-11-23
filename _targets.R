@@ -2,10 +2,10 @@
 # Load packages required to define the pipeline:
 library(targets)
 library(qs2)       #Needed by targets for format = "qs"
-# library(tarchetypes) # Load other packages as needed.
+library(tarchetypes)  # tar_quarto() to render the presentation
+library(quarto)       # needed by tar_quarto() (renv does not detect it otherwise)
 
-# TO RUN TO BE IN THE SAME ENVIRONMENT:
-# renv::qs
+# To get the same package versions (renv), run once: renv::restore()
 
 # Set target options:
 tar_option_set(
@@ -80,16 +80,23 @@ list(
     tar_target(
     pollen_map,
     plot_pollen_map(pollen_by_state)
+  ),
+
+  # Report and slides (Quarto) -> report.html, slides.html, re-rendered when a target they read changes
+  tar_quarto(
+    presentation,
+    "presentation.qmd"
   )
 )
 
 # TO COPY PASTE IN THE CONSOLE
-# tar_make()                  # to copy-paste in the console start the pipeline but NOT UNCOMMENT!!!! (loop)
+# tar_make()                  # run the pipeline (copy-paste in the console, do not uncomment here: it would loop)
 # tar_read(data_check)        # to see the check summary
 # tar_read(pollen_by_state)   # see just a result
 # tar_read(chi2_state)         # to see chi2
-# tar_read(check_chi2)        # to see the checks for the chi2
+# tar_read(chi2_check)        # to see the checks for the chi2
 # tar_read(pollen_map)        # to see the map
+# open report.html or slides.html (rendered by tar_make())
 # tar_visnetwork()            # if I want to see the network
 # next line: to install only the missing packages
 # install.packages(setdiff(c("package name","other packages name"), rownames(installed.packages())))

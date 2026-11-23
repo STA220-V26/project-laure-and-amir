@@ -1,0 +1,101 @@
+---
+title: "Pollen allergy across US states"
+subtitle: "STA220 · Data project"
+author: "Laure Rapp & Amir Dinari"
+date: today
+format:
+  html:
+    output-file: report.html
+    toc: true
+    embed-resources: true
+  revealjs:
+    output-file: slides.html
+    slide-number: true
+    smaller: true
+    scrollable: true
+    embed-resources: true
+format-links: [html, revealjs]
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+library(targets)
+library(dplyr)
+library(knitr)
+
+data_check      <- tar_read(data_check)
+patients_pollen <- tar_read(patients_pollen)
+pollen_by_state <- tar_read(pollen_by_state)
+chi2_state      <- tar_read(chi2_state)
+chi2_check      <- tar_read(chi2_check)
+
+n_pat    <- nrow(patients_pollen)
+n_pollen <- sum(patients_pollen$pollen_allergy)
+n_both   <- sum(patients_pollen$both_pollens)
+```
+
+## Research question
+
+**Is the distribution of pollen allergies unequal across US states?**
+
+- **Hypothesis:** the proportion of patients with a pollen allergy differs between states.
+- **Outcome:** pollen allergy (yes / no) for each patient.
+- **Explanatory variable:** the patient's state.
+
+## Data and linkage
+
+Synthetic patient data provided in the course, two datasets linked by patient id:
+
+- `patients.csv`: one row per patient, with state and county → **`r format(n_pat, big.mark = ",")` patients**
+- `allergies.csv`: one row per allergy diagnosis → kept only **tree and grass pollen**
+
+Linkage: one row per patient, `pollen_allergy = TRUE` if the patient has at least one pollen diagnosis.
+
+- **`r n_pollen` patients (`r round(100 * n_pollen / n_pat, 1)`%)** have a pollen allergy, `r n_both` of them to both tree and grass pollen.
+- Data checks (`data_check`): `r if (all(data_check$checks)) "all passed" else "some failed"`: no duplicated patients, no death before birth, every pollen record has a patient, no duplicated pollen records, no pollen diagnosis before birth or after death.
+
+## Pollen allergy rate by state
+
+```{r tbl-rates}
+#| tbl-cap: "Patients with a pollen allergy, by state"
+pollen_by_state |>
+  mutate(rate = paste0(round(100 * rate, 1), "%")) |>
+  rename(State = state, Patients = n_patients, `Pollen allergy` = n_pollen, Rate = rate) |>
+  kable(format.args = list(big.mark = ","))
+```
+
+Rates range from `r round(100 * min(pollen_by_state$rate), 1)`% to `r round(100 * max(pollen_by_state$rate), 1)`%.
+
+## Map
+
+```{r fig-map}
+#| fig-cap: "Proportion of patients with a pollen allergy, by state (grey: no patients in the data)"
+tar_read(pollen_map)
+```
+
+## Chi-square test
+
+**Why:** binary outcome (allergy yes / no) and a categorical variable (state) → test of independence in a `r nrow(chi2_check$table)` × 2 table.
+
+**Conditions** (`chi2_check`): one row per patient, no missing state, all expected counts ≥ 5 (smallest: `r min(chi2_check$expected)`).
+
+**Result:** χ² = `r round(chi2_state$statistic, 2)`, df = `r chi2_state$parameter`, **p = `r round(chi2_state$p.value, 2)`**
+
+**Interpretation:**
+
+- No evidence that the proportion of pollen allergy differs between states: the hypothesis is not supported.
+- A non-significant p-value does not prove that the rates are equal.
+- The data are synthetic: allergies are probably simulated without any link to the state, which fits this result.
+
+## Limitations and next steps
+
+- **Confounding:** states may differ in age and sex structure → logistic regression `pollen_allergy ~ state + gender + age` (odds ratios with confidence intervals).
+- **Size of the differences:** confidence intervals for each state's rate, not only a p-value.
+- **County level:** few patients per county → group small counties.
+- **Tree vs grass pollen** analysed separately.
+- **Age at first diagnosis** (`age_at_onset`): almost always 0–1 year (median 0), which is not realistic and comes from the synthetic data, so it was not analysed further.
+
+**Reproducibility:** `{targets}` pipeline, `renv` for package versions, GitHub issues and pull requests.

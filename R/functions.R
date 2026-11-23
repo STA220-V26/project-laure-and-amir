@@ -1,4 +1,4 @@
-# used packages: readr, dplyr, stringr, lubridate, janitor
+# used packages: readr, dplyr, stringr, curl, fs, ggplot2, usmap, scales
 
 
 
@@ -32,16 +32,22 @@ load_allergies <- function(zip_path) read_from_zip(zip_path, "allergies.csv")
 # Summary of checks on the raw data --------------------------------------
 
 check_data <- function(patients_raw, allergies_raw, pollen) {
+  # birth and death dates of the patient for each pollen record
+  pollen_dates <- left_join(pollen, patients_raw, by = c("patient" = "id"))
+
   checks <- c(
     no_dupl_patients   = !any(duplicated(patients_raw$id)),
     no_death_bef_birth = all(is.na(patients_raw$deathdate) |
     patients_raw$deathdate >= patients_raw$birthdate),
     allpoll_with_pat   = all(pollen$patient %in% patients_raw$id),
-    no_dupl_poll       = !any(duplicated(pollen))
+    no_dupl_poll       = !any(duplicated(pollen)),
+    no_diag_bef_birth  = all(pollen_dates$start >= pollen_dates$birthdate),
+    no_diag_aft_death  = all(is.na(pollen_dates$deathdate) |
+    pollen_dates$start <= pollen_dates$deathdate)
   )
   
   if (all(checks)) {
-    message("Data checks OK: no duplicated patients, no death before birth, every pollen record has a patient, no duplicated pollen records.")
+    message("Data checks OK: no duplicated patients, no death before birth, every pollen record has a patient, no duplicated pollen records, no pollen diagnosis before birth or after death.")
   } else {
     message("Data checks PROBLEM: ", paste(names(checks)[!checks], collapse = ", "))
   }
@@ -76,10 +82,10 @@ clean_pollen <- function(allergies_raw) {
 
 # Link patients and allergies ----------------------------------------------
 
-# patients with both grass and pollen have 1 line for each -> to take into account in link
+# patients with both grass and tree pollen have 1 line for each -> one row per patient after the link
 
 link_patients_pollen <- function(patients_clean, pollen) {
-  pollen_par_patient <- pollen |>
+  pollen_per_patient <- pollen |>
     group_by(patient) |>
     summarise(
       first_pollen_date = min(start),
@@ -87,11 +93,11 @@ link_patients_pollen <- function(patients_clean, pollen) {
       .groups = "drop"
     )
     patients_clean |>
-    left_join(pollen_par_patient, by = c("id" = "patient")) |>
+    left_join(pollen_per_patient, by = c("id" = "patient")) |>
     mutate(
-      pollen_allergy = !is.na(first_pollen_date),                      # pollen_allergy = True if has a date of first allergy diagnosis
-      both_pollens   = coalesce(n_pollen_types, 0L) == 2,              # both_pollen = true if allergic to both gras and tree (had 2 in n_pollen_types)
-      # age at the first diagnosis (explorative supplementary analysis), cut for it to be a natural number
+      pollen_allergy = !is.na(first_pollen_date),                      # pollen_allergy = TRUE if the patient has a date of first pollen diagnosis
+      both_pollens   = coalesce(n_pollen_types, 0L) == 2,              # both_pollens = TRUE if allergic to both grass and tree pollen (2 in n_pollen_types)
+      # age at the first diagnosis (exploratory analysis), rounded down to whole years
       age_at_onset   = floor(as.numeric(first_pollen_date - birthdate) / 365.25)
     )
 }
